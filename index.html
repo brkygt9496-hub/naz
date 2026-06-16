@@ -464,12 +464,22 @@ function updateTitle(){
 }
 function updatePlayBtn(){ playBtn.textContent = isPlaying ? '⏸' : '▶️'; }
 
+let titlePoll = null;
 function loadCurrent(){
   if (!playerReady) return;
   player.loadVideoById(SARKILAR[mOrder[mPos]]);
   mTitle.textContent = '🎵 yükleniyor…';
-  setTimeout(updateTitle, 700);
-  setTimeout(updateTitle, 1800);
+  // şarkı adı gelene kadar tekrar tekrar yokla (çalmadan da görünsün)
+  if (titlePoll) clearInterval(titlePoll);
+  let tries = 0;
+  titlePoll = setInterval(function(){
+    tries++;
+    try {
+      const d = player.getVideoData();
+      if (d && d.title){ mTitle.textContent = '🎵 ' + d.title; clearInterval(titlePoll); }
+    } catch(e){}
+    if (tries > 15) clearInterval(titlePoll);
+  }, 500);
 }
 
 function startMusic(){
