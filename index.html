@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Naz 💕 Yiğit</title>
+
+<!-- iPhone "Ana Ekrana Ekle" ayarlari -->
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Naz 💕 Yiğit" />
+<meta name="theme-color" content="#ffb6c8" />
+<!-- Ana ekran ikonu (kalp) -->
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODAgMTgwIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjQwIiBmaWxsPSIjZmZkNmUyIi8+PHBhdGggZD0iTTkwIDE0NXMtNDgtMjgtNjAtNjBjLTctMTkgNi0zOCAyNi0zOCAxMyAwIDIyIDggMzQgMjAgMTItMTIgMjEtMjAgMzQtMjAgMjAgMCAzMyAxOSAyNiAzOC0xMiAzMi02MCA2MC02MCA2MHoiIGZpbGw9IiNmZjZmOTEiLz48L3N2Zz4=" />
+
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+    background: linear-gradient(160deg, #ffe3ec 0%, #ffd0e0 45%, #ffc2dd 100%);
+    color: #6b3a4b;
+    overflow-x: hidden;
+    -webkit-user-select: none; user-select: none;
+  }
+  /* arka plandaki ucusan kalpler */
+  .bg-heart {
+    position: fixed; bottom: -40px; font-size: 22px; opacity: .35;
+    animation: floatUp linear infinite; pointer-events: none; z-index: 0;
+  }
+  @keyframes floatUp {
+    0% { transform: translateY(0) rotate(0); opacity: 0; }
+    10% { opacity: .4; }
+    100% { transform: translateY(-115vh) rotate(40deg); opacity: 0; }
+  }
+
+  .wrap {
+    position: relative; z-index: 1;
+    max-width: 440px; margin: 0 auto;
+    padding: calc(env(safe-area-inset-top) + 24px) 22px 40px;
+    min-height: 100%;
+    display: flex; flex-direction: column; align-items: center;
+    padding-bottom: 96px;
+  }
+
+  /* müzik çubuğu */
+  .musicbar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 6;
+    display: flex; align-items: center; gap: 6px;
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    background: rgba(255,255,255,.88); backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(224,87,125,.22);
+    box-shadow: 0 -6px 20px rgba(224,87,125,.12);
+  }
+  .musicbar .mbtn {
+    background: none; border: none; box-shadow: none;
+    padding: 6px 8px; font-size: 22px; line-height: 1; color: #e0577d;
+    border-radius: 50%;
+  }
+  .musicbar .mbtn:active { transform: scale(.85); background: rgba(224,87,125,.08); }
+  .musicbar .mtitle {
+    flex: 1; min-width: 0; font-size: 13px; font-weight: 600; color: #c0496c;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    padding-left: 4px;
+  }
+  #ytplayer { position: fixed; width: 2px; height: 2px; right: 0; bottom: 0; opacity: .01; pointer-events: none; z-index: -1; }
+
+  h1 {
+    font-size: 25px; margin: 6px 0 20px; font-weight: 800;
+    color: #e0577d; letter-spacing: .3px; text-align: center; line-height: 1.25;
+  }
+
+  /* gun sayaci */
+  .counter {
+    background: rgba(255,255,255,.65); backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,.8);
+    border-radius: 22px; padding: 14px 22px; text-align: center;
+    box-shadow: 0 8px 24px rgba(224,87,125,.18); margin-bottom: 26px;
+  }
+  .counter .num { font-size: 38px; font-weight: 800; color: #e0577d; line-height: 1; }
+  .counter .lbl { font-size: 13px; color: #b9667f; margin-top: 4px; }
+
+  /* kazi-kazan karti */
+  .card {
+    position: relative; width: 100%; max-width: 360px;
+    aspect-ratio: 3 / 2;
+    border-radius: 26px; overflow: hidden;
+    box-shadow: 0 14px 38px rgba(224,87,125,.28);
+    background: #fff;
+  }
+  .note {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; padding: 26px;
+    font-size: 21px; font-weight: 600; line-height: 1.45;
+    color: #d6486f;
+    background: linear-gradient(140deg, #fff6fa, #ffe7f0);
+  }
+  .note small { display:block; margin-top:10px; font-size:13px; font-weight:500; color:#c98aa0; }
+  canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+
+  .hint { font-size: 13px; color: #b9667f; margin: 16px 0 22px; height: 16px; }
+
+  button {
+    font-family: inherit; font-size: 17px; font-weight: 700;
+    color: #fff; background: linear-gradient(135deg, #ff8fb1, #e0577d);
+    border: none; border-radius: 999px; padding: 14px 30px;
+    box-shadow: 0 8px 20px rgba(224,87,125,.35);
+    cursor: pointer; transition: transform .12s ease, box-shadow .12s ease;
+  }
+  button:active { transform: scale(.95); box-shadow: 0 4px 12px rgba(224,87,125,.3); }
+  button:disabled { opacity: .45; box-shadow: none; cursor: default; }
+
+  /* ikincil (sıfırla) buton */
+  button.ghost {
+    background: transparent; color: #c06a83;
+    border: 1.5px solid #f0a8bf; box-shadow: none;
+    font-size: 14px; padding: 10px 22px; margin-top: 14px;
+  }
+  button.ghost:active { transform: scale(.96); }
+
+  .remain { font-size: 13px; color: #b9667f; margin-bottom: 14px; font-weight: 600; }
+  .done { font-size: 13px; color: #b9667f; margin-top: 26px; text-align:center; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <h1 id="title">Seni Çok Seviyorum Bebeğim 💕</h1>
+
+  <div class="counter">
+    <div class="num" id="dayNum">–</div>
+    <div class="lbl" id="dayLbl">gündür hayatımdasın 💞</div>
+  </div>
+
+  <div class="card" id="card">
+    <div class="note" id="note">…</div>
+    <canvas id="scratch"></canvas>
+  </div>
+
+  <div class="hint" id="hint">👆 parmağınla kazı ve mesajı gör</div>
+
+  <div class="remain" id="remain"></div>
+  <button id="newBtn">Yeni kart 🎟️</button>
+  <button id="resetBtn" class="ghost">Tüm notları sıfırla ↺</button>
+
+  <div class="done" id="counterDone"></div>
+</div>
+
+<!-- müzik çubuğu -->
+<div class="musicbar">
+  <button class="mbtn" id="mprev" aria-label="Önceki şarkı">⏮</button>
+  <button class="mbtn" id="mplay" aria-label="Çal / Durdur">▶️</button>
+  <button class="mbtn" id="mnext" aria-label="Sonraki şarkı">⏭</button>
+  <div class="mtitle" id="mtitle">🎵 Müzik için dokun</div>
+</div>
+<div id="ytplayer"></div>
+
+<script>
+/* ============================================================
+   ✏️  BURAYI DÜZENLE  —  Yiğit, notlarını buraya yaz.
+   Her not tırnak içinde ve sonunda virgül olacak şekilde.
+   İstediğin kadar ekleyebilirsin.
+   ============================================================ */
+const NOTLAR = [
+  "Seni çok seviyorum bebeğim. 💕",
+  "Yıllarca hayallerimde yaşadığım sendin.",
+  "Daha küçük bir çocukken seni bulamadığım için geceleri ağlıyordum.",
+  "Seni dünyanın her yerine götürmek istiyorum. 🌍",
+  "Saçlarının her teline dokunmak istiyorum.",
+  "Yüzünü ellerimin, avuçlarımın arasına alıp bakmak istiyorum.",
+  "O güzel gözlerinde hayatım boyunca kaybolmak istiyorum.",
+  "Sen yokken zaman benim için duruyor.",
+  "Sen yanımdayken saatler dakika gibi geçiyor.",
+  "Sadece sana sarılmak ve öylece kalmak istiyorum.",
+  "Her güne gözlerimi seninle açmak istiyorum. ☀️",
+  "Her uykuya dalarken son gördüğüm, son duyduğum sen ol istiyorum.",
+  "Ben seni kimsenin kimseyi sevmediği kadar çok seviyorum.",
+  "Yaşayacağım her günüm sana ait sevgilim.",
+  "Ben sayende kendimi bile seviyorum artık.",
+  "Seninle tanıştığım o gün dünyanın en güzel günüydü.",
+  "Ve yaşadığımız her gün bir öncekinden daha güzel olacak.",
+  "Ben seni sevmeye hayatım boyunca doymayacağım bebeğim.",
+  "Her nefesimde yanımda ol.",
+  "Attığım her adımda elimden tut.",
+  "Canın neye sıkılırsa sıkılsın yanındayım.",
+  "Düşecek gibi olursan ben seni tutarım.",
+  "Hayat seni ne kadar zorlarsa zorlasın ben seninleyim.",
+  "Ne yapmak istiyorsan seninle birlikte yaparım.",
+  "Seni hayatının sonuna kadar pişman etmeyeceğim güzelim.",
+  "Seni bir kitap olarak yazmak istiyorum. 📖",
+  "Şu an 'yanıma gel' desen gelirim.",
+  "Her sabah sana sarılıp seni öperek uyanacağım.",
+  "Ütü yapmayı bilmiyorum ama senin için yaparım.",
+  "Bulaşık yıkamaktan nefret ediyorum ama senin için yaparım.",
+  "Bilmediğim ve sevmediğim her şeyi senin için yaparım.",
+  "Seninle saatlerce sarılıp oturmak istiyorum.",
+  "Dünyanın her yerinde güneşin doğuşunu ve batışını izlemek istiyorum. 🌅",
+  "Gülüşünü bir gün dahi olsa kaybettirmeyeceğim sana.",
+  "Sen benim en büyük 'iyi ki'msin. 🍀",
+  "Hayatta yaşadığım her gün beni sana hazırlamış sevgilim.",
+  "Sensiz yaşadığım bütün günleri seninle 1 dakikaya veririm.",
+  "Sen hep beni sev, hep yanımda ol.",
+  "Sen beni ne kadar kovsan da ben yıllardır sendeyim.",
+  "Beraber kahvemizi alıp kedilerimizi sevelim. ☕🐱",
+  "Bana şu an hemen bir fotoğraf gönder, bence ihtiyacım var :D",
+  "Kollarımda seni uyutmak, uyanana kadar sana bakıp seni sevmek istiyorum.",
+  "Seni bütün kötülüklerden korumak istiyorum.",
+  "Sana, seni sen yapan anne babandan bile daha yakın olmak istiyorum.",
+  "Seninle birlikte yaşamak istiyorum.",
+  "Seninle evlenmek istiyorum. Seninle evlenebilir miyim? 💍",
+  "Kızımız Rüya'nın tamamen sana benzemesini istiyorum.",
+  "Bütün mimiklerini seviyorum.",
+  "Sesini seviyorum.",
+  "Kalbimde, hayatımda, her şeyim tamamen senin. 💗",
+  "Seninle aynı yatakta gözlerimi açmak istiyorum.",
+  "Sesin, hayatımda duyduğum en güzel tını.",
+  "Seninle geçen her gün hayatımın en güzel günü gibi.",
+  "Kokun kokuma karışsın istiyorum.",
+  "Kedimizi aramıza alıp beraber uyumak istiyorum. 🐱",
+  "Aklımdan bir an bile olsa çıkmıyorsun.",
+  "Gördüğüm en güzel şey sensin bir tanem.",
+  "Dinlediğim her şarkı seni anlatıyor. 🎵",
+  "Sanırım gözlerini dövme yaptıracağım :D",
+  "Sana sarılıp denizi izlemek istiyorum. 🌊",
+  "Norveç'te o hayalini kurduğum evi birlikte yapacağız.",
+  "Bir an olsun yanından ayrılmayacağıma emin olacaksın.",
+  "Seni dünyanın en mutlu insanı yapacağım.",
+  "Benden hiçbir zaman şüphe etmeyeceksin.",
+  "Seni her şeyden çok seveceğim. 💞"
+];
+
+/* ---- ayarlar ---- */
+const OZEL_TARIH = "2026-06-10"; // gün sayacı bu tarihten başlar (YYYY-AA-GG)
+
+/* ============================================================
+   Aşağısı sistemdir, dokunmana gerek yok 🙂
+   ============================================================ */
+
+// gün sayacı
+(function(){
+  const start = new Date(OZEL_TARIH + "T00:00:00");
+  const now = new Date();
+  const days = Math.max(0, Math.floor((now - start) / 86400000));
+  document.getElementById('dayNum').textContent = days;
+})();
+
+// arka plan kalpleri
+(function(){
+  const emojis = ["💗","💕","🌸","💞","💖"];
+  for (let i = 0; i < 14; i++) {
+    const h = document.createElement('div');
+    h.className = 'bg-heart';
+    h.textContent = emojis[i % emojis.length];
+    h.style.left = Math.random()*100 + 'vw';
+    h.style.animationDuration = (7 + Math.random()*7) + 's';
+    h.style.animationDelay = (Math.random()*8) + 's';
+    h.style.fontSize = (16 + Math.random()*18) + 'px';
+    document.body.appendChild(h);
+  }
+})();
+
+const noteEl = document.getElementById('note');
+const canvas = document.getElementById('scratch');
+const ctx = canvas.getContext('2d');
+const hint = document.getElementById('hint');
+const card = document.getElementById('card');
+
+const remainEl = document.getElementById('remain');
+const newBtn = document.getElementById('newBtn');
+const SEEN_KEY = 'naz_gorulen_notlar';
+
+let seen = loadSeen();   // görülmüş (okunmuş) not numaraları
+let current = null;      // şu an ekranda olan kartın numarası
+let revealed = false;
+let allDone = false;
+
+function loadSeen(){
+  try {
+    const v = JSON.parse(localStorage.getItem(SEEN_KEY) || '[]');
+    return new Set(v.filter(i => i >= 0 && i < NOTLAR.length));
+  } catch(e){ return new Set(); }
+}
+function saveSeen(){
+  try { localStorage.setItem(SEEN_KEY, JSON.stringify([...seen])); } catch(e){}
+}
+
+// görülmemiş notlardan rastgele birini seç (mevcut kartı tekrar verme)
+function pickNote(){
+  const kalan = [];
+  for (let i = 0; i < NOTLAR.length; i++){
+    if (!seen.has(i) && i !== current) kalan.push(i);
+  }
+  if (kalan.length === 0){
+    // sadece mevcut kart kaldıysa onu da kullan
+    for (let i = 0; i < NOTLAR.length; i++) if (!seen.has(i)) kalan.push(i);
+  }
+  if (kalan.length === 0) return null;
+  return kalan[Math.floor(Math.random()*kalan.length)];
+}
+
+function updateRemain(){
+  const kalan = NOTLAR.length - seen.size;
+  remainEl.textContent = '💌 Kalan not: ' + kalan + ' / ' + NOTLAR.length;
+}
+
+function setupCanvas(){
+  const r = card.getBoundingClientRect();
+  canvas.width = r.width;
+  canvas.height = r.height;
+  // gri-pembe kazınacak yüzey
+  const g = ctx.createLinearGradient(0,0,r.width,r.height);
+  g.addColorStop(0,'#ffc4da');
+  g.addColorStop(1,'#ff9ebd');
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.fillStyle = g;
+  ctx.fillRect(0,0,r.width,r.height);
+  // üstüne yazı
+  ctx.fillStyle = 'rgba(255,255,255,.92)';
+  ctx.font = '600 20px -apple-system, system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('💌 Beni kazı 💌', r.width/2, r.height/2 - 8);
+  ctx.font = '500 13px -apple-system, system-ui, sans-serif';
+  ctx.fillText('parmağınla sürt', r.width/2, r.height/2 + 16);
+}
+
+function newCard(){
+  const pick = pickNote();
+  if (pick === null){ showAllDone(); return; }
+  current = pick;
+  allDone = false;
+  noteEl.innerHTML = NOTLAR[current] + '<small>— Yiğit</small>';
+  revealed = false;
+  hint.textContent = '👆 parmağınla kazı ve mesajı gör';
+  canvas.style.display = 'block';
+  canvas.style.opacity = '1';
+  newBtn.disabled = false;
+  setupCanvas();
+}
+
+function showAllDone(){
+  allDone = true;
+  current = null;
+  revealed = true;
+  canvas.style.display = 'none';
+  noteEl.innerHTML = "Bütün notları gördün, aşkım 💕<small>Hepsini tekrar okumak için “Tüm notları sıfırla”ya bas</small>";
+  hint.textContent = '🎉';
+  newBtn.disabled = true;
+}
+
+function resetNotes(){
+  seen.clear();
+  saveSeen();
+  current = null;
+  updateRemain();
+  newCard();
+}
+
+// kazıma
+let drawing = false;
+function pos(e){
+  const r = canvas.getBoundingClientRect();
+  const t = e.touches ? e.touches[0] : e;
+  return { x: (t.clientX - r.left) * (canvas.width/r.width),
+           y: (t.clientY - r.top) * (canvas.height/r.height) };
+}
+function scratch(e){
+  if (!drawing || revealed) return;
+  e.preventDefault();
+  const p = pos(e);
+  ctx.globalCompositeOperation = 'destination-out';
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, 26, 0, Math.PI*2);
+  ctx.fill();
+  checkReveal();
+}
+function checkReveal(){
+  const img = ctx.getImageData(0,0,canvas.width,canvas.height).data;
+  let clear = 0;
+  for (let i = 3; i < img.length; i += 64) if (img[i] === 0) clear++;
+  const ratio = clear / (img.length/64);
+  if (ratio > 0.5 && !revealed){
+    revealed = true;
+    // bu kartı görülmüş say -> bir daha çıkmaz
+    if (current !== null && !seen.has(current)){
+      seen.add(current);
+      saveSeen();
+      updateRemain();
+    }
+    canvas.style.transition = 'opacity .5s';
+    canvas.style.opacity = '0';
+    hint.textContent = (NOTLAR.length - seen.size) > 0 ? '💞' : '🎉 Hepsi bu kadar!';
+    setTimeout(()=>{ canvas.style.transition=''; }, 500);
+    // hepsi bittiyse Yeni kart'ı kapat
+    if (NOTLAR.length - seen.size === 0){ newBtn.disabled = true; }
+  }
+}
+
+canvas.addEventListener('mousedown', e=>{ drawing=true; scratch(e); });
+canvas.addEventListener('mousemove', scratch);
+window.addEventListener('mouseup', ()=> drawing=false);
+canvas.addEventListener('touchstart', e=>{ drawing=true; scratch(e); }, {passive:false});
+canvas.addEventListener('touchmove', scratch, {passive:false});
+canvas.addEventListener('touchend', ()=> drawing=false);
+
+newBtn.addEventListener('click', newCard);
+document.getElementById('resetBtn').addEventListener('click', resetNotes);
+window.addEventListener('resize', ()=>{ if(!revealed && !allDone) setupCanvas(); });
+
+// başlat
+updateRemain();
+newCard();
+
+/* ============================================================
+   🎶  MÜZİK  —  şarkı YouTube linklerinin video kimlikleri
+   Yeni şarkı eklemek istersen linkteki v=... kısmını buraya ekle.
+   ============================================================ */
+const SARKILAR = [
+  "o0HjwDXkZow","gIXXxyE3GnA","dRTU5yqQmKk","5D9iGTHY5nY",
+  "qFoNegwFLnk","OHkcU6yUz3A","YIQVsiJZj6g","07E7PgRluM4",
+  "ROG-EPTxk2s","zFVwqzrdkLg","__8MtzxyUuk","phfC4i8ohso",
+  "K1jD4co8a8s","rd1mgCQ6XYc"
+];
+
+function shuffleArr(n){
+  const a = [...Array(n).keys()];
+  for (let i = a.length-1; i>0; i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+
+let mOrder = shuffleArr(SARKILAR.length);
+let mPos = 0;
+let player = null, playerReady = false, musicStarted = false, isPlaying = false;
+
+const mTitle = document.getElementById('mtitle');
+const playBtn = document.getElementById('mplay');
+
+// YouTube IFrame API yükle
+(function(){ const t = document.createElement('script'); t.src = 'https://www.youtube.com/iframe_api'; document.head.appendChild(t); })();
+
+window.onYouTubeIframeAPIReady = function(){
+  player = new YT.Player('ytplayer', {
+    height: '1', width: '1',
+    playerVars: { playsinline: 1, controls: 0, rel: 0 },
+    events: {
+      'onReady': function(){ playerReady = true; },
+      'onStateChange': onPlayerState,
+      'onError': function(){ nextSong(); } // çalmayan şarkıyı atla
+    }
+  });
+};
+
+function onPlayerState(e){
+  if (e.data === YT.PlayerState.ENDED){ nextSong(); }
+  else if (e.data === YT.PlayerState.PLAYING){ isPlaying = true; updatePlayBtn(); updateTitle(); }
+  else if (e.data === YT.PlayerState.PAUSED){ isPlaying = false; updatePlayBtn(); }
+}
+
+function updateTitle(){
+  try {
+    const d = player.getVideoData();
+    if (d && d.title) mTitle.textContent = '🎵 ' + d.title;
+  } catch(e){}
+}
+function updatePlayBtn(){ playBtn.textContent = isPlaying ? '⏸' : '▶️'; }
+
+function loadCurrent(){
+  if (!playerReady) return;
+  player.loadVideoById(SARKILAR[mOrder[mPos]]);
+  mTitle.textContent = '🎵 yükleniyor…';
+  setTimeout(updateTitle, 700);
+  setTimeout(updateTitle, 1800);
+}
+
+function startMusic(){
+  if (musicStarted || !playerReady) return;
+  musicStarted = true;
+  loadCurrent();
+}
+function nextSong(){
+  if (!musicStarted){ startMusic(); return; }
+  mPos++;
+  if (mPos >= mOrder.length){ mOrder = shuffleArr(SARKILAR.length); mPos = 0; }
+  loadCurrent();
+}
+function prevSong(){
+  if (!musicStarted){ startMusic(); return; }
+  mPos--;
+  if (mPos < 0){ mPos = mOrder.length - 1; }
+  loadCurrent();
+}
+function togglePlay(){
+  if (!playerReady) return;
+  if (!musicStarted){ startMusic(); return; }
+  if (isPlaying){ player.pauseVideo(); } else { player.playVideo(); }
+}
+
+document.getElementById('mprev').addEventListener('click', prevSong);
+document.getElementById('mnext').addEventListener('click', nextSong);
+playBtn.addEventListener('click', togglePlay);
+
+// ilk dokunuşta müzik kendiliğinden başlasın (iPhone sesi ilk dokunuşta açar)
+function firstTouch(){
+  if (!playerReady) return;            // API hazır değilse sonraki dokunuşu bekle
+  startMusic();
+  if (musicStarted){
+    document.removeEventListener('touchend', firstTouch);
+    document.removeEventListener('mousedown', firstTouch);
+  }
+}
+document.addEventListener('touchend', firstTouch);
+document.addEventListener('mousedown', firstTouch);
+</script>
+</body>
+</html>
